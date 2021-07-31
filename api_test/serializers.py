@@ -46,7 +46,7 @@ class ProjectDeserializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Project
-        fields = ('id', 'name', 'version', 'type', 'status', 'LastUpdateTime', 'createTime', 'description', 'user')
+        fields = ('id', 'name', 'version', 'type', 'status', 'LastUpdateTime', 'createTime', 'description', 'user', 'department')
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -59,11 +59,12 @@ class ProjectSerializer(serializers.ModelSerializer):
     LastUpdateTime = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
     createTime = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
     user = serializers.CharField(source='user.first_name')
+    department = serializers.CharField()
 
     class Meta:
         model = Project
         fields = ('id', 'name', 'version', 'type', 'status', 'LastUpdateTime', 'createTime', 'apiCount',
-                  'dynamicCount', 'memberCount', 'description', 'user')
+                  'dynamicCount', 'memberCount', 'description', 'user', 'department')
 
     def get_apiCount(self, obj):
         return obj.api_project.all().count()

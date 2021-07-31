@@ -19,14 +19,16 @@
         <el-table :data="project" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
             <el-table-column type="selection" min-width="5%">
             </el-table-column>
-            <el-table-column prop="name" label="项目名称" min-width="30%" sortable show-overflow-tooltip>
+            <el-table-column prop="name" label="项目名称" min-width="28%" sortable show-overflow-tooltip>
                 <template slot-scope="scope">
                     <el-icon name="name"></el-icon>
-                    <router-link v-if="scope.row.status" :to="{ name: '项目概况', params: {project_id: scope.row.id}}" style="cursor:pointer;color: #0000FF;text-decoration:underline">
+                    <router-link v-if="scope.row.status" :to="{ name: '项目概况', params: {project_id: scope.row.id}}" style="cursor:pointer;color: #0000ff;text-decoration:underline">
                         {{ scope.row.name }}
                     </router-link>
                     {{ !scope.row.status?scope.row.name:""}}
                 </template>
+            </el-table-column>
+            <el-table-column prop="department" label="部门" min-width="10%" sortable>
             </el-table-column>
             <el-table-column prop="version" label="项目版本" min-width="12%" sortable>
             </el-table-column>
@@ -40,7 +42,7 @@
                     <img v-show="!scope.row.status" src="../assets/icon-no.svg"/>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" min-width="19%">
+            <el-table-column label="操作" min-width="21%">
                 <template slot-scope="scope">
                     <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                     <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>

@@ -86,10 +86,26 @@ class UserProfile(models.Model):
         return self.phone
 
 
+# 部门表
+class Department(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=50, verbose_name='部门名称')
+    leader = models.CharField(max_length=50, verbose_name='Leader')
+
+    def __unicode__(self):
+        return self.name
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = '部门'
+        verbose_name_plural = '部门'
+
+
+# 项目表
 class Project(models.Model):
-    """
-    项目表
-    """
+    """项目表"""
     ProjectType = (
         ('Web', 'Web'),
         ('App', 'App')
@@ -103,6 +119,7 @@ class Project(models.Model):
     LastUpdateTime = models.DateTimeField(auto_now=True, verbose_name='最近修改时间')
     createTime = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, max_length=1024, verbose_name='创建人')
+    department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True, verbose_name='部门')
 
     def __unicode__(self):
         return self.name
@@ -115,10 +132,9 @@ class Project(models.Model):
         verbose_name_plural = '项目'
 
 
+# 项目动态
 class ProjectDynamic(models.Model):
-    """
-    项目动态
-    """
+    """项目动态"""
     id = models.AutoField(primary_key=True)
     project = models.ForeignKey(Project, related_name='dynamic_project', on_delete=models.CASCADE, verbose_name='所属项目')
     time = models.DateTimeField(max_length=128, verbose_name='操作时间')
@@ -136,14 +152,14 @@ class ProjectDynamic(models.Model):
         verbose_name_plural = '项目动态'
 
 
+# 项目成员
 class ProjectMember(models.Model):
-    """
-    项目成员
-    """
+    """"""
     CHOICES = (
         ('超级管理员', '超级管理员'),
         ('开发人员', '开发人员'),
-        ('测试人员', '测试人员')
+        ('测试人员', '测试人员'),
+        ('测试开发', '测试开发')
     )
     id = models.AutoField(primary_key=True)
     permissionType = models.CharField(max_length=50, verbose_name='权限角色', choices=CHOICES)
@@ -161,6 +177,7 @@ class ProjectMember(models.Model):
         verbose_name_plural = '项目成员'
 
 
+# host域名
 class GlobalHost(models.Model):
     """
     host域名
@@ -183,6 +200,7 @@ class GlobalHost(models.Model):
         verbose_name_plural = 'HOST管理'
 
 
+# 自定义方法
 class CustomMethod(models.Model):
     """
     自定义方法
@@ -203,6 +221,7 @@ class CustomMethod(models.Model):
         verbose_name_plural = '自定义方法'
 
 
+# 接口一级分组
 class ApiGroupLevelFirst(models.Model):
     """
     接口一级分组
@@ -222,6 +241,7 @@ class ApiGroupLevelFirst(models.Model):
         verbose_name_plural = '接口分组'
 
 
+# 接口信息
 class ApiInfo(models.Model):
     """
     接口信息

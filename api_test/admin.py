@@ -1,7 +1,7 @@
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-from api_test.models import Project, GlobalHost, ApiGroupLevelFirst, ApiInfo, \
+from api_test.models import Department, Project, GlobalHost, ApiGroupLevelFirst, ApiInfo, \
     APIRequestHistory, ApiOperationHistory, ProjectDynamic, ProjectMember, \
     AutomationGroupLevelFirst, AutomationTestCase, AutomationParameter, AutomationCaseApi, \
     AutomationTestResult, AutomationTestTask, AutomationHead, UserProfile, ApiHead, ApiParameter, ApiResponse, \
@@ -113,6 +113,23 @@ class ReadAndDeleteModelAdmin(admin.ModelAdmin):
         return super(ReadAndDeleteModelAdmin, self).has_change_permission(request, obj)
 
 
+class DepartmentForm(admin.ModelAdmin):
+    search_fields = ('name',)
+    list_display = ('id', 'name', 'leader')
+    list_display_links = ('name', 'leader')
+    list_filter = ('name', 'leader')
+    list_per_page = 20
+    ordering = ('id',)
+    fieldsets = ([
+        '部门', {
+            'fields': ('name', 'leader')
+        }],
+    )
+
+
+admin.site.register(Department, DepartmentForm)
+
+
 class MemberInProject(admin.TabularInline):
     model = ProjectMember
 
@@ -121,17 +138,21 @@ class HostInProject(admin.TabularInline):
     model = GlobalHost
 
 
+class DepartmentInProject(admin.TabularInline):
+    model = Department
+
+
 class ProjectForm(admin.ModelAdmin):
     inlines = [MemberInProject, HostInProject]
     search_fields = ('name', 'type')
-    list_display = ('id', 'name', 'version', 'type', 'status', 'LastUpdateTime', 'createTime', 'user')
+    list_display = ('id', 'name', 'version', 'type', 'status', 'LastUpdateTime', 'createTime', 'user', 'department')
     list_display_links = ('id', 'name',)
     list_filter = ('status', 'type')
     list_per_page = 20
     ordering = ('id',)
     fieldsets = ([
         '项目', {
-            'fields': ('name', 'version', 'type', 'description', 'status', 'user')
+            'fields': ('name', 'version', 'type', 'description', 'status', 'user', 'department')
         }],
     )
 

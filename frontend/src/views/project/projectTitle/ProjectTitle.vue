@@ -15,8 +15,8 @@
             </el-col>
             <el-col :span="6" class='inline'>
                 <el-card class="box-card">
-                    <h1>{{updateDate}}</h1>
-                    <div>最近更新时间</div>
+                    <h1>{{department}}</h1>
+                    <div>所属部门</div>
                 </el-card>
             </el-col>
         </el-row>
@@ -61,7 +61,14 @@
                     <div>创建时间</div>
                 </el-card>
             </el-col>
+            <el-col :span="6" class='inline'>
+                <el-card class="box-card">
+                    <h1>{{updateDate}}</h1>
+                    <div>最近更新时间</div>
+                </el-card>
+            </el-col>
         </el-row>
+
     </div>
 </template>
 
@@ -72,12 +79,13 @@
             return {
                 type: '',
                 version: '',
-                updateDate: '',
+                department: '',
                 apiCount: 0,
                 statusCount: 0,
                 dynamicCount: 0,
                 memberCount: 0,
                 createDate: '',
+                updateDate: '',
             }
         },
         methods: {
@@ -94,11 +102,12 @@
                         if (code === '999999') {
                             self.type = data.type;
                             self.version = data.version;
-                            self.updateDate = data.LastUpdateTime;
+                            self.department = data.department;
                             self.apiCount = data.apiCount;
                             self.dynamicCount = data.dynamicCount;
                             self.memberCount = data.memberCount;
                             self.createDate = data.createTime;
+                            self.updateDate = data.LastUpdateTime;
                         }
                         else {
                             self.$message.error({

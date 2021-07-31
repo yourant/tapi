@@ -85,7 +85,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api_test',
-    # 'corsheaders',
+    'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_swagger',
@@ -132,6 +132,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'tapi.urls'
@@ -202,7 +203,10 @@ USE_TZ = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
-    '*'
+    # '*',
+    'http://localhost:8080',
+    'http://127.0.0.1:8080',
+    'http://*.*.*:*'
 )
 
 CORS_ALLOW_METHODS = (
