@@ -56,9 +56,14 @@ let routes = [
         name: '',
         projectHidden: true,
         children: [
-            { path: '/projectList', component: projectList, iconCls:'el-icon-message', name: '项目列表'},
+            { path: '/projectList', component: projectList, iconCls:'fa fa-list-ul', name: '项目列表'},
+            { path: '/myProjectList', component: projectList, iconCls:'fa fa-bookmark-o', name: '收藏项目（TODO）'},
             // { path: '/robot', component: robot, iconCls:'fa fa-id-card-o', name: '消息机器人', meta: { keepAlive: false }},
-            { path: '/about', component: About, iconCls:'fa fa-address-card', name: '关于我们'},
+            { path: '/apiTest', component: About, iconCls:'fa fa-cogs', name: '测试面板（TODO）'},
+            { path: '/jobs', component: About, iconCls:'fa fa-calendar', name: 'Jobs（TODO）'},
+            { path: '/resultAnalysis', component: About, iconCls:'fa fa-bar-chart-o', name: '结果分析（TODO）'},
+            { path: '/performanceAnalysis', component: About, iconCls:'fa fa-bug', name: '性能分析（TODO）'},
+            { path: '/about', component: About, iconCls:'el-icon-message', name: '关于我们'},
             ]
     },
     {

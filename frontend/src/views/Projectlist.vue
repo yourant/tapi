@@ -6,6 +6,12 @@
                 <el-form-item>
                     <el-input v-model="filters.name" placeholder="名称" @keyup.enter.native="getProjectList"></el-input>
                 </el-form-item>
+                <el-form-item label="所属部门" prop="">
+                    <el-select v-model="filters.department" placeholder="请选择">
+                        <el-option v-for="item in department_options" :key="item.name" :label="item.name" :value="item.name">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="getProjectList">查询</el-button>
                 </el-form-item>
@@ -19,7 +25,7 @@
         <el-table :data="project" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
             <el-table-column type="selection" min-width="5%">
             </el-table-column>
-            <el-table-column prop="name" label="项目名称" min-width="28%" sortable show-overflow-tooltip>
+            <el-table-column prop="name" label="项目名称" min-width="25%" sortable show-overflow-tooltip>
                 <template slot-scope="scope">
                     <el-icon name="name"></el-icon>
                     <router-link v-if="scope.row.status" :to="{ name: '项目概况', params: {project_id: scope.row.id}}" style="cursor:pointer;color: #0000ff;text-decoration:underline">
@@ -28,15 +34,17 @@
                     {{ !scope.row.status?scope.row.name:""}}
                 </template>
             </el-table-column>
-            <el-table-column prop="department" label="部门" min-width="10%" sortable>
+            <el-table-column prop="projectGroupLevelFirst" label="分组" min-width="10%" sortable>
             </el-table-column>
-            <el-table-column prop="version" label="项目版本" min-width="12%" sortable>
+            <el-table-column prop="department" label="部门" min-width="8%" sortable>
             </el-table-column>
-            <el-table-column prop="type" label="类型" min-width="9%" sortable>
+            <el-table-column prop="user" label="负责人" min-width="8%" sortable>
             </el-table-column>
-            <el-table-column prop="LastUpdateTime" label="最后修改时间" min-width="16%" sortable>
+            <el-table-column prop="version" label="版本" min-width="10%" sortable>
             </el-table-column>
-            <el-table-column prop="status" label="状态" min-width="9%" sortable>
+            <el-table-column prop="LastUpdateTime" label="最后修改时间" min-width="15%" sortable>
+            </el-table-column>
+            <el-table-column prop="status" label="状态" min-width="8%" sortable>
                 <template slot-scope="scope">
                     <img v-show="scope.row.status" src="../assets/icon-yes.svg"/>
                     <img v-show="!scope.row.status" src="../assets/icon-no.svg"/>
@@ -66,16 +74,34 @@
                 </el-form-item>
                 <el-row :gutter="24">
                     <el-col :span="12">
-                        <el-form-item label="类型" prop='type'>
-                            <el-select v-model="editForm.type" placeholder="请选择">
-                                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+                        <el-form-item label="所属部门" prop="department">
+                            <el-select v-model="editForm.department" placeholder="请选择">
+                                <el-option v-for="item in department_options" :key="item.name" :label="item.name" :value="item.name">
                                 </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
+                        <el-form-item label="所属分组" prop="projectGroupLevelFirst">
+                            <el-select v-model="editForm.projectGroupLevelFirst" placeholder="请选择">
+                                <el-option v-for="item in projectGroupLevelFirst_options" :key="item.name" :label="item.name" :value="item.name">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row :gutter="24">
+                    <el-col :span="12">
                         <el-form-item label="版本号" prop='version'>
                             <el-input v-model="editForm.version" auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="负责人" prop='user'>
+                            <el-select v-model="editForm.user" placeholder="请选择">
+                                <el-option v-for="item in user_options" :key="item.username" :label="item.username" :value="item.username">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -125,32 +151,45 @@
 <script>
     //import NProgress from 'nprogress'
     import { getProject, delProject, disableProject, enableProject,
-        updateProject, addProject} from '../api/api';
+        updateProject, addProject, getDepartment, getUser, getProjectGroupLevelFirst} from '../api/api';
     // import ElRow from "element-ui/packages/row/src/row";
     export default {
         // components: {ElRow},
         data() {
             return {
                 filters: {
-                    name: ''
+                    name: '',
+                    department: '',
                 },
                 project: [],
                 total: 0,
                 page: 1,
                 listLoading: false,
-                sels: [],//列表选中列
+                sels: [], //列表选中列
 
                 editFormVisible: false,//编辑界面是否显示
                 editLoading: false,
-                options: [{ label: "Web", value: "Web"}, { label: "App", value: "App"}],
+                // options: [{ label: "Web", value: "Web"}, { label: "App", value: "App"}],
+                department_options: [],
+                projectGroupLevelFirst_options: [],
+                user_options: [],
                 editFormRules: {
                     name: [
                         { required: true, message: '请输入名称', trigger: 'blur' },
                         { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
                     ],
-                    type: [
-                        { required: true, message: '请选择类型', trigger: 'blur' }
+                    department: [
+                        { required: true, message: '请选择部门名称', trigger: 'blur' }
                     ],
+                    projectGroupLevelFirst: [
+                        { required: true, message: '请选择项目分组名称', trigger: 'blur' }
+                    ],
+                    user: [
+                        { required: true, message: '请选择user', trigger: 'blur' }
+                    ],
+                    // type: [
+                    //     { required: true, message: '请选择类型', trigger: 'blur' }
+                    // ],
                     version: [
                         { required: true, message: '请输入版本号', trigger: 'blur' },
                         { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
@@ -163,8 +202,10 @@
                 //编辑界面数据
                 editForm: {
                     name: '',
+                    department: '',
+                    projectGroupLevelFirst: '',
                     version: '',
-                    type: '',
+                    user: '',
                     description: ''
                 },
 
@@ -202,7 +243,7 @@
             getProjectList() {
                 this.listLoading = true;
                 let self = this;
-                let params = { page: self.page, name: self.filters.name};
+                let params = { page: self.page, name: self.filters.name, department: self.filters.department };
                 let headers = {Authorization: 'Token '+JSON.parse(sessionStorage.getItem('token'))};
                 getProject(headers, params).then((res) => {
                     self.listLoading = false;
@@ -217,7 +258,43 @@
                             center: true,
                         })
                     }
-                })
+                });
+                getDepartment(headers, params).then((res) => {
+                    let { msg, code, data } = res;
+                    if (code === '999999') {
+                        self.department_options = data.data
+                    }
+                    else {
+                        self.$message.error({
+                            message: msg,
+                            center: true,
+                        })
+                    }
+                });
+                getProjectGroupLevelFirst(headers, params).then((res) => {
+                    let { msg, code, data } = res;
+                    if (code === '999999') {
+                        self.projectGroupLevelFirst_options = data.data
+                    }
+                    else {
+                        self.$message.error({
+                            message: msg,
+                            center: true,
+                        })
+                    }
+                });
+                getUser(headers, params).then((res) => {
+                    let { msg, code, data } = res;
+                    if (code === '999999') {
+                        self.user_options = data.data
+                    }
+                    else {
+                        self.$message.error({
+                            message: msg,
+                            center: true,
+                        })
+                    }
+                });
             },
             //删除
             handleDel: function (index, row) {
@@ -323,7 +400,9 @@
                             let params = {
                                 project_id: self.editForm.id,
                                 name: self.editForm.name,
-                                type: self.editForm.type,
+                                projectGroupLevelFirst: self.editForm.projectGroupLevelFirst,
+                                department: self.editForm.department,
+                                user: self.editForm.user,
                                 version: self.editForm.version,
                                 description: self.editForm.description
                             };
@@ -443,7 +522,7 @@
                         self.getProjectList()
                     });
                 })
-            }
+            },
         },
         mounted() {
             this.getProjectList();

@@ -13,13 +13,22 @@ from django.conf.urls import url
 from api_test.api import ApiDoc, automationCase as Case, member, dynamic, user, VisitorRecord, DingManage
 from api_test.api import automationReport as Report
 from api_test.api.global_parameter import HostTotal, AddHost, UpdateHost, DelHost, DisableHost, EnableHost
-from api_test.api.projectList import ProjectList, AddProject, DelProject, \
-    EnableProject, UpdateProject, DisableProject
+from api_test.api.projectList import ProjectGroupList, AddProjectGroup, UpdateProjectGroup, DelProjectGroup, \
+    ProjectList, AddProject, DelProject, EnableProject, UpdateProject, DisableProject
 from api_test.api.projectTitle import ProjectInfo
+from api_test.api.departmentList import DepartmentList
+from api_test.api.user import UserList
 
 urlpatterns = [
     url(r'user/dingConfig', DingManage.DingManage.as_view()),
     # url(r'user/dingLogin', DingManage.DingLogin.as_view()),
+    # 新增项目分组
+    url(r'department/department_list', DepartmentList.as_view()),
+    url(r'project/group_list', ProjectGroupList.as_view()),
+    url(r'project/add_group', AddProjectGroup.as_view()),
+    url(r'project/update_group', UpdateProjectGroup.as_view()),
+    url(r'project/del_group', DelProjectGroup.as_view()),
+
     url(r'project/project_list', ProjectList.as_view()),
     url(r'project/add_project', AddProject.as_view()),
     url(r'project/update_project', UpdateProject.as_view()),
@@ -84,6 +93,7 @@ urlpatterns = [
     url(r'dynamic/dynamic', dynamic.Dynamic.as_view()),
     url(r'user/login', user.obtain_auth_token),
     url(r'user/VisitorRecord', VisitorRecord.Record.as_view()),
+    url(r'user/user_list', UserList.as_view()),
 ]
 
 

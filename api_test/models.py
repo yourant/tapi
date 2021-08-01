@@ -83,7 +83,7 @@ class UserProfile(models.Model):
         return self.user.username
 
     def __str__(self):
-        return self.phone
+        return ''  # self.phone
 
 
 # 部门表
@@ -103,6 +103,25 @@ class Department(models.Model):
         verbose_name_plural = '部门'
 
 
+# 项目一级分组
+class ProjectGroupLevelFirst(models.Model):
+    """
+    项目一级分组
+    """
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=50, verbose_name='项目一级分组名称')
+
+    def __unicode__(self):
+        return self.name
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = '项目分组'
+        verbose_name_plural = '项目分组'
+
+
 # 项目表
 class Project(models.Model):
     """项目表"""
@@ -120,6 +139,9 @@ class Project(models.Model):
     createTime = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, max_length=1024, verbose_name='创建人')
     department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True, verbose_name='部门')
+    projectGroupLevelFirst = models.ForeignKey(ProjectGroupLevelFirst, blank=True, null=True,
+                                               on_delete=models.SET_NULL, verbose_name='项目一级分组',
+                                               related_name="automationGroup")
 
     def __unicode__(self):
         return self.name
@@ -380,6 +402,7 @@ class ApiOperationHistory(models.Model):
         verbose_name_plural = '接口操作历史'
 
 
+# 自动化用例一级分组
 class AutomationGroupLevelFirst(models.Model):
     """
     自动化用例一级分组

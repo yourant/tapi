@@ -1,7 +1,7 @@
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-from api_test.models import Department, Project, GlobalHost, ApiGroupLevelFirst, ApiInfo, \
+from api_test.models import ProjectGroupLevelFirst, Department, Project, GlobalHost, ApiGroupLevelFirst, ApiInfo, \
     APIRequestHistory, ApiOperationHistory, ProjectDynamic, ProjectMember, \
     AutomationGroupLevelFirst, AutomationTestCase, AutomationParameter, AutomationCaseApi, \
     AutomationTestResult, AutomationTestTask, AutomationHead, UserProfile, ApiHead, ApiParameter, ApiResponse, \
@@ -59,7 +59,7 @@ class PhoneForm(admin.ModelAdmin):
 
 
 class CustomUserAdmin(UserAdmin):
-    inlines = [ProfileInline,]
+    inlines = [ProfileInline, ]
 
 
 admin.site.unregister(User)
@@ -113,6 +113,22 @@ class ReadAndDeleteModelAdmin(admin.ModelAdmin):
         return super(ReadAndDeleteModelAdmin, self).has_change_permission(request, obj)
 
 
+#  ===
+class ProjectGroupLevelFirstForm(admin.ModelAdmin):
+    search_fields = ('name', )
+    list_display = ('id', 'name')
+    list_display_links = ('id', 'name')
+    list_per_page = 20
+    ordering = ('id',)
+    fieldsets = ([
+        '项目分组', {
+            'fields': ('name', )
+        }],)
+
+
+admin.site.register(ProjectGroupLevelFirst, ProjectGroupLevelFirstForm)
+
+
 class DepartmentForm(admin.ModelAdmin):
     search_fields = ('name',)
     list_display = ('id', 'name', 'leader')
@@ -145,14 +161,14 @@ class DepartmentInProject(admin.TabularInline):
 class ProjectForm(admin.ModelAdmin):
     inlines = [MemberInProject, HostInProject]
     search_fields = ('name', 'type')
-    list_display = ('id', 'name', 'version', 'type', 'status', 'LastUpdateTime', 'createTime', 'user', 'department')
+    list_display = ('id', 'name', 'version', 'type', 'status', 'LastUpdateTime', 'createTime', 'user', 'department', 'projectGroupLevelFirst')
     list_display_links = ('id', 'name',)
     list_filter = ('status', 'type')
     list_per_page = 20
     ordering = ('id',)
     fieldsets = ([
         '项目', {
-            'fields': ('name', 'version', 'type', 'description', 'status', 'user', 'department')
+            'fields': ('name', 'version', 'type', 'description', 'status', 'user', 'department', 'projectGroupLevelFirst')
         }],
     )
 

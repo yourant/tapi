@@ -21,11 +21,157 @@ from rest_framework.views import APIView
 
 from api_test.common.api_response import JsonResponse
 from api_test.common.common import record_dynamic
-from api_test.models import Project
-from api_test.serializers import ProjectSerializer, ProjectDeserializer, \
-    ProjectMemberDeserializer
+from api_test.models import Department, Project, ProjectGroupLevelFirst
+from api_test.serializers import ProjectGroupLevelFirstSerializer, ProjectGroupLevelFirstDeserializer, \
+    ProjectSerializer, ProjectDeserializer, ProjectMemberDeserializer
 
 logger = logging.getLogger(__name__)  # 这里使用 __name__ 动态搜索定义的 logger 配置，这里有一个层次关系的知识点。
+
+
+class ProjectGroupList(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = ()
+
+    def get(self, request):
+        """
+        项目分组
+        :param request:
+        :return:
+        """
+        try:
+            page_size = int(request.GET.get("page_size", 20))
+            page = int(request.GET.get("page", 1))
+        except (TypeError, ValueError):
+            return JsonResponse(code="999985", msg="page and page_size must be integer!")
+        name = request.GET.get("name")
+        if name:
+            obi = ProjectGroupLevelFirst.objects.filter(name__contains=name).order_by("id")
+        else:
+            obi = ProjectGroupLevelFirst.objects.all().order_by("id")
+        paginator = Paginator(obi, page_size)  # paginator对象
+        total = paginator.num_pages  # 总页数
+        try:
+            obm = paginator.page(page)
+        except PageNotAnInteger:
+            obm = paginator.page(1)
+        except EmptyPage:
+            obm = paginator.page(paginator.num_pages)
+        serialize = ProjectGroupLevelFirstSerializer(obm, many=True)
+        return JsonResponse(data={"data": serialize.data,
+                                  "page": page,
+                                  "total": total
+                                  }, code="999999", msg="成功")
+
+
+class AddProjectGroup(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = ()
+
+    def parameter_check(self, data):
+        """
+        校验参数
+        :param data:
+        :return:
+        """
+        try:
+            # 必传参数 name
+            if not data["name"]:
+                return JsonResponse(code="999996", msg="参数有误!")
+        except KeyError:
+            return JsonResponse(code="999996", msg="参数有误!")
+
+    def post(self, request):
+        """
+        新增项目分组
+        :param request:
+        :return:
+        """
+        data = JSONParser().parse(request)
+        result = self.parameter_check(data)
+        if result:
+            return result
+        # 反序列化
+        serializer = ProjectGroupLevelFirstDeserializer(data=data)
+        return JsonResponse(data={"group_id": serializer.data.get("id")}, code="999999", msg="成功!")
+
+
+class UpdateProjectGroup(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = ()
+
+    def parameter_check(self, data):
+        """
+        校验参数
+        :param data:
+        :return:
+        """
+        try:
+            # 校验id类型为int
+            if not isinstance(data["id"], int):
+                return JsonResponse(code="999996", msg="参数有误!")
+            # 必传参数 name
+            if not data["name"]:
+                return JsonResponse(code="999996", msg="参数有误!")
+        except KeyError:
+            return JsonResponse(code="999996", msg="参数有误!")
+
+    def post(self, request):
+        """
+        修改接口分组名称
+        :param request:
+        :return:
+        """
+        data = JSONParser().parse(request)
+        result = self.parameter_check(data)
+        if result:
+            return result
+        try:
+            obj = ProjectGroupLevelFirst.objects.get(id=data["id"])
+        except ObjectDoesNotExist:
+            return JsonResponse(code="999991", msg="分组不存在!")
+        serializer = ProjectGroupLevelFirstDeserializer(data=data)
+        if serializer.is_valid():
+            serializer.update(instance=obj, validated_data=data)
+        else:
+            return JsonResponse(code="999998", msg="失败!")
+        return JsonResponse(code="999999", msg="成功!")
+
+
+class DelProjectGroup(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = ()
+
+    def parameter_check(self, data):
+        """
+        校验参数
+        :param data:
+        :return:
+        """
+        try:
+            # 校验id类型为int
+            if not isinstance(data["id"], int):
+                return JsonResponse(code="999996", msg="参数有误!")
+        except KeyError:
+            return JsonResponse(code="999996", msg="参数有误!")
+
+    def post(self, request):
+        """
+        修改项目分组名称
+        :param request:
+        :return:
+        """
+        data = JSONParser().parse(request)
+        result = self.parameter_check(data)
+        if result:
+            return result
+        # 根据项目id和host id查找，若存在则删除
+        obi = ProjectGroupLevelFirst.objects.filter(id=data["id"])
+        if obi:
+            name = obi[0].name
+            obi.delete()
+        else:
+            return JsonResponse(code="999991", msg="分组不存在!")
+        return JsonResponse(code="999999", msg="成功!")
 
 
 class ProjectList(APIView):
@@ -44,8 +190,21 @@ class ProjectList(APIView):
         except (TypeError, ValueError):
             return JsonResponse(code="999985", msg="page and page_size must be integer!")
         name = request.GET.get("name")
-        if name:
+        department_name = request.GET.get("department")
+        department_id = 0
+        if department_name:
+            try:
+                department_id = Department.objects.get(name=department_name).id
+            except Exception as e:
+                return JsonResponse(code="999985", msg="没找到对应的部门!")
+        if name and department_id:
+            obi = Project.objects.filter(
+                name__contains=name, department__exact=department_id
+            ).order_by("id")
+        elif name:
             obi = Project.objects.filter(name__contains=name).order_by("id")
+        elif department_id:
+            obi = Project.objects.filter(department__exact=department_id).order_by("id")
         else:
             obi = Project.objects.all().order_by("id")
         paginator = Paginator(obi, page_size)  # paginator对象

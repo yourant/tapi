@@ -11,8 +11,8 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
-from api_test.models import Project, ProjectDynamic, ProjectMember, GlobalHost, ApiGroupLevelFirst, \
-    ApiInfo, APIRequestHistory, ApiOperationHistory, AutomationGroupLevelFirst, \
+from api_test.models import Department, ProjectGroupLevelFirst, Project, ProjectDynamic, ProjectMember, GlobalHost, \
+    ApiGroupLevelFirst, ApiInfo, APIRequestHistory, ApiOperationHistory, AutomationGroupLevelFirst, \
     AutomationTestCase, AutomationCaseApi, AutomationHead, AutomationParameter, AutomationTestTask, \
     AutomationTestResult, ApiHead, ApiParameter, ApiResponse, ApiParameterRaw, AutomationParameterRaw, \
     AutomationResponseJson, AutomationTaskRunTime, AutomationCaseTestResult, AutomationReportSendConfig
@@ -40,13 +40,50 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'first_name')
 
 
+class DepartmentDeserializer(serializers.ModelSerializer):
+    """
+    部门信息反序列化
+    """
+    class Meta:
+        model = Department
+        fields = ('id', 'name')
+
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    """
+    部门信息序列化
+    """
+    class Meta:
+        model = Department
+        fields = ('id', 'name')
+
+
+class ProjectGroupLevelFirstSerializer(serializers.ModelSerializer):
+    """
+    项目一级分组信息序列化
+    """
+    class Meta:
+        model = ProjectGroupLevelFirst
+        fields = ('id', 'name')
+
+
+class ProjectGroupLevelFirstDeserializer(serializers.ModelSerializer):
+    """
+    项目一级分组信息反序列化
+    """
+    class Meta:
+        model = ApiGroupLevelFirst
+        fields = ('id', 'name')
+
+
 class ProjectDeserializer(serializers.ModelSerializer):
     """
     项目信息反序列化
     """
     class Meta:
         model = Project
-        fields = ('id', 'name', 'version', 'type', 'status', 'LastUpdateTime', 'createTime', 'description', 'user', 'department')
+        fields = ('id', 'name', 'version', 'type', 'status', 'LastUpdateTime', 'createTime', 'description', 'user',
+                  'department', 'projectGroupLevelFirst')
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -60,11 +97,12 @@ class ProjectSerializer(serializers.ModelSerializer):
     createTime = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
     user = serializers.CharField(source='user.first_name')
     department = serializers.CharField()
+    projectGroupLevelFirst = serializers.CharField()
 
     class Meta:
         model = Project
         fields = ('id', 'name', 'version', 'type', 'status', 'LastUpdateTime', 'createTime', 'apiCount',
-                  'dynamicCount', 'memberCount', 'description', 'user', 'department')
+                  'dynamicCount', 'memberCount', 'description', 'user', 'department', 'projectGroupLevelFirst')
 
     def get_apiCount(self, obj):
         return obj.api_project.all().count()

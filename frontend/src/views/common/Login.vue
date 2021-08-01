@@ -1,33 +1,33 @@
 <template>
     <div class="homeBox">
-        <ul class="tyg-div">
-            <li>让</li>
-            <li><div style="margin-left:20px;">测</div></li>
-            <li><div style="margin-left:40px;">试</div></li>
-            <li><div style="margin-left:60px;">变</div></li>
-            <li><div style="margin-left:80px;">得</div></li>
-            <li><div style="margin-left:100px;">轻</div></li>
-            <li><div style="margin-left:120px;">松</div></li>
-        </ul>
+<!--        <ul class="tyg-div">-->
+<!--            <li>让</li>-->
+<!--            <li><div style="margin-left:20px;">测</div></li>-->
+<!--            <li><div style="margin-left:40px;">试</div></li>-->
+<!--            <li><div style="margin-left:60px;">变</div></li>-->
+<!--            <li><div style="margin-left:80px;">得</div></li>-->
+<!--            <li><div style="margin-left:100px;">简</div></li>-->
+<!--            <li><div style="margin-left:120px;">单</div></li>-->
+<!--        </ul>-->
         <div style="width:32%;height: auto;margin-left: 30%">
             <div class="title0">自动化测试平台</div>
             <div class="title1">项目管理、接口管理、用例管理、测试报告、任务设置</div>
             <div class="lun-container">
-                <div class="carouse" id="carouse">
-                    <div class="pic1"><img src="../../assets/page1_0.png" alt="pic1"></div>
-                    <div class="pic2"><img src="../../assets/page1_1.png" alt="pic2"></div>
-                    <div class="pic3"><img src="../../assets/page1_2.png" alt="pic3"></div>
-                </div>
+<!--                <div class="carouse" id="carouse">-->
+<!--                    <div class="pic1"><img src="../../assets/page1_0.png" alt="pic1"></div>-->
+<!--                    <div class="pic2"><img src="../../assets/page1_1.png" alt="pic2"></div>-->
+<!--                    <div class="pic3"><img src="../../assets/page1_2.png" alt="pic3"></div>-->
+<!--                </div>-->
             </div>
             <img class="img-login" src="../../assets/page1_3.jpg"/>
         </div>
         <el-form :model="ruleForm2" :rules="rules2" ref="ruleForm2" label-position="left" label-width="0px" class="demo-ruleForm login-container">
             <h3 class="title">系统登录</h3>
-            <el-tabs v-model="activeName" @tab-click="handleClick" :stretch="true">
-                <el-tab-pane label="钉钉登录" name="first">
-                    <div id="login_container"></div>
-                </el-tab-pane>
-                <el-tab-pane label="账号登录" name="second">
+            <el-tabs v-model="activeName" @tab-click="handleClick" :stretch="false">
+<!--                <el-tab-pane label="钉钉登录" name="second">-->
+<!--                    <div id="login_container"></div>-->
+<!--                </el-tab-pane>-->
+                <el-tab-pane label="账号登录" name="first">
                     <el-form-item prop="account">
                         <el-input type="text" v-model.trim="ruleForm2.account" auto-complete="off" placeholder="账号"></el-input>
                     </el-form-item>

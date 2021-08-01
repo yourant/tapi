@@ -12,6 +12,16 @@ export const dingLogin = params => { return axios.post(`${test}/api/user/dingCon
 export const requestLogin = params => { return axios.post(`${test}/api/user/login`, params).then(res => res.data); };
 // 记录访客
 export const recordVisitor = params => { return axios.post(`${test}/api/user/VisitorRecord`, params).then(res => res.data); };
+// 获取部门
+export const getDepartment = (headers, params) => {
+    return axios.get(`${test}/api/department/department_list`, { params: params, headers:headers}).then(res => res.data); };
+// 获取项目分组
+export const getProjectGroupLevelFirst = (headers, params) => {
+    return axios.get(`${test}/api/project/group_list`, { params: params, headers:headers}).then(res => res.data); };
+// 获取UserProfile
+export const getUser = (headers, params) => {
+    return axios.get(`${test}/api/user/user_list`, { params: params, headers:headers}).then(res => res.data); };
+
 // 获取项目
 export const getProject = (headers, params) => {
     return axios.get(`${test}/api/project/project_list`, { params: params, headers:headers}).then(res => res.data); };
